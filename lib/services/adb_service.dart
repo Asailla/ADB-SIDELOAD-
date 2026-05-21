@@ -19,8 +19,8 @@ class AdbService {
 
   /// Pair device using ADB WiFi Wireless Debugging Pairing protocols
   Future<bool> pair(String ip, int port, String pairCode) async {
-    storage.addLog('Pairing with device $ip:$port using pairing code '$pairCode'...');
-    
+    // แก้บรรทัดนี้
+storage.addLog("Pairing with device $ip:$port using pairing code '$pairCode'...");
     // Simulated Socket handshake sequence mirroring standard ADB specifications
     try {
       await Future.delayed(const Duration(seconds: 2)); // Simulate handshake timing
