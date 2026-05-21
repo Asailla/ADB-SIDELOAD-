@@ -11,44 +11,50 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Java MUST (ให้ GitHub จัดการ JAVA_HOME ให้ถูก)
-      - name: Setup Java
+      # Java (แก้ JAVA_HOME + Gradle)
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
           cache: gradle
 
-      # Flutter (ใช้ action ที่ stable จริง)
+      # Flutter stable (ใช้ v2 ที่มีจริง)
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
+      # ตรวจสอบ environment
       - name: Flutter doctor
         run: flutter doctor -v
 
+      # ดึง dependencies
       - name: Get dependencies
         run: flutter pub get
 
-      # HARD RESET Android state (แก้ SAVED/CD error)
-      - name: Clean Android project
+      # สำคัญ: fix permission gradlew
+      - name: Fix gradlew permission
+        run: chmod +x android/gradlew
+
+      # ล้าง cache กัน Gradle เพี้ยน (SAVED / cd error)
+      - name: Clean Android build
         run: |
           cd android
-          rm -rf .gradle
-          rm -rf build
-          ./gradlew clean
+          ./gradlew clean || true
           cd ..
 
-      - name: Build APK
+      # build APK
+      - name: Build APK (Release)
         run: flutter build apk --release
 
+      # upload artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
