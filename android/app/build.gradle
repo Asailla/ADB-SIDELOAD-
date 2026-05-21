@@ -2,8 +2,6 @@ plugins {
     id "com.android.application"
     id "dev.flutter.flutter-gradle-plugin"
 }
-    // ลบ id "org.jetbrains.kotlin.android" ออก
-}
 
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
