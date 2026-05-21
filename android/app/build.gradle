@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
     id "dev.flutter.flutter-gradle-plugin"
-    id "org.jetbrains.kotlin.android"
+    // ลบ id "org.jetbrains.kotlin.android" ออก
 }
 
 def localProperties = new Properties()
