@@ -21,11 +21,10 @@ jobs:
           java-version: '17'
 
       - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+        uses: flutter-actions/setup-flutter@v3
         with:
-          flutter-version: '3.22.2'
           channel: stable
-          cache: true
+          version: 3.22.2
 
       - name: Show Flutter version
         run: flutter --version
