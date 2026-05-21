@@ -84,7 +84,8 @@ class _PairScreenState extends State<PairScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(''$name' Paired and Saved Successfully!'),
+            // แก้บรรทัดนี้
+content: Text("'$name' Paired and Saved Successfully!"),
             backgroundColor: Colors.tealAccent,
           ),
         );
