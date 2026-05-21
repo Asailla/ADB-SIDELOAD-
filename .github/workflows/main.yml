@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # FIX 1: Java ต้อง set JAVA_HOME ให้ถูก (สำคัญมาก)
+      # Java fix (สำคัญ)
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
@@ -22,12 +22,11 @@ jobs:
           java-version: '17'
           cache: gradle
 
-      # FIX 2: ใช้ Flutter action แทน wget (เสถียรกว่า)
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v3
-        with:
-          channel: stable
-          cache: true
+      # Install Flutter (แบบเสถียร ไม่พึ่ง action ที่พังง่าย)
+      - name: Install Flutter
+        run: |
+          git clone https://github.com/flutter/flutter.git -b stable --depth 1
+          echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
 
       - name: Flutter doctor
         run: flutter doctor -v
@@ -36,18 +35,15 @@ jobs:
       - name: Get dependencies
         run: flutter pub get
 
-      # FIX 3: clean gradle state (กัน error cd $SAVED)
-      - name: Clean Android build
-        run: |
-          cd android
-          ./gradlew clean || true
-          cd ..
+      # fix gradle
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
 
-      # build
+      # build APK
       - name: Build APK
         run: flutter build apk --release
 
-      # upload
+      # upload artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
