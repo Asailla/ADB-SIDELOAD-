@@ -9,11 +9,9 @@ import 'services/adb_service.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize storage
   final storage = DeviceStorageService();
   await storage.initialize();
   
-  // Initialize ADB Service
   final adbService = AdbService(storage: storage);
   
   runApp(AdbSchoolLoaderApp(
@@ -37,7 +35,7 @@ class AdbSchoolLoaderApp extends StatelessWidget {
     return MaterialApp(
       title: 'ADB School Loader',
       debugShowCheckedModeBanner: false,
-      themeMode: ThemeMode.dark, // Default to Dark Theme as requested
+      themeMode: ThemeMode.dark,
       darkTheme: ThemeData(
         useMaterial3: true,
         brightness: Brightness.dark,
@@ -46,9 +44,8 @@ class AdbSchoolLoaderApp extends StatelessWidget {
           brightness: Brightness.dark,
           primary: Colors.tealAccent,
           surface: const Color(0xFF1E1E1E),
-          background: const Color(0xFF121212),
         ),
-        cardTheme: const CardTheme(
+        cardTheme: const CardThemeData(
           color: Color(0xFF252525),
           margin: EdgeInsets.all(8),
         ),
@@ -88,7 +85,7 @@ class MainNavigationScaffold extends StatefulWidget {
 }
 
 class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
-  int _currentIndex = 1; // Default to Connect Screen
+  int _currentIndex = 1;
   late final List<Widget> _screens;
 
   @override
@@ -101,7 +98,6 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
       ToolsScreen(adbService: widget.adbService),
     ];
     
-    // Auto-reconnect triggered after build frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _triggerAutoReconnect();
     });
@@ -120,24 +116,15 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
       
       if (ip.isNotEmpty) {
         final success = await widget.adbService.connect(ip, port);
-        if (success) {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Auto-reconnected to ${lastDevice['name'] ?? ip} Successfully!'),
-                backgroundColor: Colors.green,
-              ),
-            );
-          }
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Auto-reconnect failed. Check target IP and device status.'),
-                backgroundColor: Colors.redAccent,
-              ),
-            );
-          }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(success
+                  ? 'Auto-reconnected to ${lastDevice['name'] ?? ip} Successfully!'
+                  : 'Auto-reconnect failed. Check target IP and device status.'),
+              backgroundColor: success ? Colors.green : Colors.redAccent,
+            ),
+          );
         }
       }
     }
@@ -188,22 +175,10 @@ class _MainNavigationScaffoldState extends State<MainNavigationScaffold> {
           });
         },
         destinations: const [
-          NavigationDestination(
-            icon: Icon(Icons.vpn_key),
-            label: 'Pairing',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.devices),
-            label: 'Connect',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.system_update),
-            label: 'Install APKs',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.build_circle),
-            label: 'ADB Tools',
-          ),
+          NavigationDestination(icon: Icon(Icons.vpn_key), label: 'Pairing'),
+          NavigationDestination(icon: Icon(Icons.devices), label: 'Connect'),
+          NavigationDestination(icon: Icon(Icons.system_update), label: 'Install APKs'),
+          NavigationDestination(icon: Icon(Icons.build_circle), label: 'ADB Tools'),
         ],
       ),
     );
