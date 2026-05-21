@@ -3,28 +3,49 @@ name: Build Flutter APK
 on:
   workflow_dispatch:
   push:
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Setup Java (จำเป็นสำหรับ Android build)
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Setup Flutter (แก้ปัญหาหลักตรงนี้)
       - name: Setup Flutter
         uses: subosito/flutter-action@v3
         with:
           channel: stable
 
+      # ตรวจสอบ Flutter version (ช่วย debug ถ้ายังพัง)
+      - name: Show Flutter version
+        run: flutter --version
+
+      # ดึง dependencies
       - name: Get dependencies
         run: flutter pub get
 
+      # แก้ permission เผื่อ Android build
+      - name: Fix Gradle permissions
+        run: chmod +x android/gradlew
+
+      # Build APK release
       - name: Build APK
         run: flutter build apk --release
 
+      # Upload APK artifact
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
+          name: app-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
