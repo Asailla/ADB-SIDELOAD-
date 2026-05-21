@@ -20,13 +20,13 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Flutter
-        uses: flutter-actions/setup-flutter@v3
-        with:
-          channel: stable
-          version: 3.22.2
+      - name: Install Flutter
+        run: |
+          wget -q https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.22.2-stable.tar.xz
+          tar xf flutter_linux_3.22.2-stable.tar.xz
+          echo "$GITHUB_WORKSPACE/flutter/bin" >> $GITHUB_PATH
 
-      - name: Show Flutter version
+      - name: Flutter version
         run: flutter --version
 
       - name: Get dependencies
