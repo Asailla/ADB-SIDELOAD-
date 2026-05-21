@@ -14,45 +14,45 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Java (แก้ JAVA_HOME + Gradle)
+      # FIX 1: Java แบบไม่ให้พัง JAVA_HOME
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-          cache: gradle
 
-      # Flutter stable (ใช้ v2 ที่มีจริง)
+      # FIX 2: Flutter stable
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      # ตรวจสอบ environment
-      - name: Flutter doctor
-        run: flutter doctor -v
+      # DEBUG สำคัญ (ดูว่า JAVA_HOME พังไหม)
+      - name: Debug environment
+        run: |
+          echo "JAVA_HOME=$JAVA_HOME"
+          which java
+          java -version
 
-      # ดึง dependencies
+      # dependencies
       - name: Get dependencies
         run: flutter pub get
 
-      # สำคัญ: fix permission gradlew
-      - name: Fix gradlew permission
-        run: chmod +x android/gradlew
-
-      # ล้าง cache กัน Gradle เพี้ยน (SAVED / cd error)
-      - name: Clean Android build
+      # FIX 3: ล้าง Gradle state ที่ทำให้ SAVED error
+      - name: Clean Android project
         run: |
           cd android
-          ./gradlew clean || true
+          rm -rf .gradle
+          rm -rf build
+          chmod +x gradlew
           cd ..
 
-      # build APK
-      - name: Build APK (Release)
+      # build
+      - name: Build APK
         run: flutter build apk --release
 
-      # upload artifact
+      # upload
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
